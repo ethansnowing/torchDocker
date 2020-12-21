@@ -1,0 +1,8 @@
+*.jpg
+*.png
+.gradle
+/local.properties
+/.idea/*
+.DS_Store
+/day04/data/*
+/day04/flower_data/*
