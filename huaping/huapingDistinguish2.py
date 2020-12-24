@@ -1,4 +1,5 @@
 # 使用pytorch已经训练好的模型resnet，进行鉴别花屏、非花屏图片
+# 和huapingDistinguish.py不同的是这个脚本会训练所以层
 import os
 import matplotlib.pyplot as plt
 import numpy as np
@@ -39,7 +40,7 @@ data_transforms = {
     ]),
 }
 
-batch_size = 8
+batch_size = 1
 
 image_datasets = {x: datasets.ImageFolder(os.path.join(data_dir, x), data_transforms[x]) for x in ['train', 'valid']}
 dataloaders = {x: torch.utils.data.DataLoader(image_datasets[x], batch_size=batch_size, shuffle=True) for x in ['train', 'valid']}
@@ -94,7 +95,8 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 def set_parameter_requires_grad(model, feature_extracting):
     if feature_extracting:
         for param in model.parameters():
-            param.requires_grad = False
+            # 是否训练所以层
+            param.requires_grad =True
 
 # 加载resnet152模型
 model_ft = models.resnet152()
@@ -147,6 +149,7 @@ model_ft = model_ft.to(device)
 
 # 模型保存
 filename='checkpoint.pth'
+filename='checkpoint2.pth'
 
 # 是否训练所有层
 params_to_update = model_ft.parameters()
@@ -165,7 +168,7 @@ else:
 print(model_ft)
 
 # 优化器设置
-optimizer_ft = optim.Adam(params_to_update, lr=1e-2)
+optimizer_ft = optim.Adam(params_to_update, lr=1e-4)        # 训练所以层，把学习率调滴一点
 scheduler = optim.lr_scheduler.StepLR(optimizer_ft, step_size=7, gamma=0.1)#学习率每7个epoch衰减成原来的1/10
 #最后一层已经LogSoftmax()了，所以不能nn.CrossEntropyLoss()来计算了，nn.CrossEntropyLoss()相当于logSoftmax()和nn.NLLLoss()整合
 criterion = nn.NLLLoss()
@@ -282,6 +285,9 @@ model_ft = model_ft.to(device)
 
 # 保存文件的名字
 filename='seriouscheckpoint.pth'
+
+
+
 
 # 加载训练好的模型
 checkpoint = torch.load(filename)
