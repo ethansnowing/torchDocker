@@ -6,3 +6,7 @@
 .DS_Store
 /day04/data/*
 /day04/flower_data/*
+/data/mnist/MNIST/raw/*
+/data/mnist/MNIST/processed/*.pt
+/server/*.pth
+/huaping2/*.pth
